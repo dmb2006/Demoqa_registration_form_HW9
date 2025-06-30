@@ -1,56 +1,48 @@
 from selene import browser, have
-from pathlib import Path
-
-import test
+from demoga_test import resource
+from demoga_test.pages.registration_page import RegistrationPage
 
 
 def test_student_registration(configuration_browser):
-    browser.open('/automation-practice-form')
+    registration_page = RegistrationPage()
+    registration_page.open()
 
-    #WHEN
-    browser.element('[id=firstName]').type(text='Marcus')
-    browser.element('[id=lastName]').type(text='Findle')
+    # WHEN
+    registration_page.type_first_name('Marcus')
+    registration_page.type_last_name('Findle')
+    registration_page.type_email_adress('marcus@ya.ru')
 
-    browser.element('[id=userEmail]').type(text='marcus@ya.ru')
+    registration_page.gender('Male')
+    registration_page.number('4565464646')
 
-    browser.all('[name=gender]').element_by(have.value('Male')).element('..').click()
+    registration_page.date_of_birth('1986', 'August', '26')
 
-    browser.element('[id=userNumber]').send_keys('8949898494')
+    registration_page.type_subjects('Computer Science')
+    registration_page.hobbies()
 
-    browser.element('[id=dateOfBirthInput]').click()
+    registration_page.upload_picture()
 
-    browser.element('[class*=year-select] > option[value="1988"]').click()
-    browser.element('[class*=month-select] > option[value="5"]').click()
-    browser.element('[class*=day--023]').click()
+    registration_page.type_current_address('Ayuor')
 
-    browser.element('[id=subjectsInput]').type('Computer Science').press_enter()
+    registration_page.state_and_city('Haryana', 'Panipat')
 
-    browser.element('[id=hobbies-checkbox-3]').element('..').click()
+    registration_page.submit()
 
-    browser.element('[id=uploadPicture]').set_value(str(Path(test.__file__).parent.joinpath('resources/cbr600rr.jpeg')))
+    # THEN
+    registration_page.should_greeting_registration_form('submitting the form')
+    registration_page.should_registration_info(
+        'Marcus',
+        'Findle',
+        'marcus@ya.ru',
+        'Male',
+        '4565464646',
+        '26 August,1986',
+        'Computer Science',
+        'Music',
+        'cbr600rr.jpeg',
+        'Ayuor',
+        'Haryana',
+        'Panipat'
+    )
 
-    browser.element('[id=currentAddress]').type('Auyor')
 
-    browser.element('[id=state]').click()
-    browser.all('[id^=react-select][id*=option]').element_by(have.exact_text('Haryana')).click()
-    browser.element('[id=city]').click()
-    browser.all('[id^=react-select][id*=option]').element_by(have.exact_text('Panipat')).click()
-
-    browser.element('[id=submit]').click()
-
-
-
-    #THEN
-    browser.element('[id^=example-modal][id*=title]').should(have.text('submitting the form'))
-    browser.element('.table').all('td').should(have.texts(
-        'Student Name', 'Marcus Findle',
-        'Student Email', 'marcus@ya.ru',
-        'Gender', 'Male',
-        'Mobile', '8949898494',
-        'Date of Birth', '23 June,1988',
-        'Subjects', 'Computer Science',
-        'Hobbies', 'Music',
-        'Picture', 'cbr600rr.jpeg',
-        'Address', 'Auyor',
-        'State and City', 'Haryana Panipat'
-    ))
