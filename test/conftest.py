@@ -17,11 +17,6 @@ def load_end():
     selenoid_pass = os.getenv("SELENOID_PASS")
     selenoid_url = os.getenv("SELENOID_URL")
 
-def configuration_browser():
-    browser.config.base_url = 'https://demoqa.com'
-    browser.config.window_width = 1920
-    browser.config.window_height = 1080
-
     options = Options()
     selenoid_capabilities = {
         "browserName": "chrome",
@@ -32,12 +27,17 @@ def configuration_browser():
         }
     }
 
-    options.capabilities,update(selenoid_capabilities)
+    options.capabilities, update(selenoid_capabilities)
     driver = webdriver.Remote(
         command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
         options=options)
 
     browser.config.driver = driver
+
+def configuration_browser(load_end):
+    browser.config.base_url = 'https://demoqa.com'
+    browser.config.window_width = 1920
+    browser.config.window_height = 1080
 
     yield
 
