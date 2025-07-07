@@ -1,6 +1,6 @@
 from selene import browser, have
 from pathlib import Path
-
+import allure
 import test
 from demoga_test.data.users import User
 from demoga_test.enum.enum import Gender, Hobbies, State
@@ -8,29 +8,32 @@ from demoga_test.page.registaration_page import RegistrationPage
 
 
 def test_student_registration_form(configuration_browser):
-    registration_page = RegistrationPage()
+    with allure.step('Открытие страницы для тестирования'):
+        registration_page = RegistrationPage()
 
-    student = User(
-        first_name='Alex',
-        last_name='Potapov',
-        email='potap@ya.ru',
-        gender=Gender.MALE.value,
-        mobile='0123456789',
-        year='1986',
-        month='August',
-        day='12',
-        subject='Computer Science',
-        hobbies=Hobbies.MUSIC.value,
-        picture_name='cbr600rr.jpeg',
-        address='Saint-Petersburg Nevskiy street',
-        state=State.NCR.value,
-        city='Noida'
-    )
+    with allure.step('Заполнение формы тестовыми данными'):
+        student = User(
+            first_name='Alex',
+            last_name='Potapov',
+            email='potap@ya.ru',
+            gender=Gender.MALE.value,
+            mobile='0123456789',
+            year='1986',
+            month='August',
+            day='12',
+            subject='Computer Science',
+            hobbies=Hobbies.MUSIC.value,
+            picture_name='cbr600rr.jpeg',
+            address='Saint-Petersburg Nevskiy street',
+            state=State.NCR.value,
+            city='Noida'
+        )
 
+    with allure.step('Проверка что на форме присутвует заголовок, что регистрация успешная'):
+        registration_page.full_fill_registration_form(student)
 
-    registration_page.full_fill_registration_form(student)
-
-    registration_page.should_registration_fill_form(student)
+    with allure.step('Проверка, что данные совпадают'):
+        registration_page.should_registration_fill_form(student)
 
 # def test_student_registration(configuration_browser):
 #     browser.open('/automation-practice-form')
