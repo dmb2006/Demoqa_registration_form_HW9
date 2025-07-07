@@ -29,6 +29,8 @@ class RegistrationPage:
 
     def full_fill_registration_form(self, user: User):
         browser.open('/automation-practice-form')
+        browser.driver.execute_script("$('#fixedban').remove()")
+        browser.driver.execute_script("$('footer').remove()")
         self.first_name.type(user.first_name)
         self.last_name.type(user.last_name)
         self.email.type(user.email)

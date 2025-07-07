@@ -9,9 +9,13 @@ import pytest
 from utils import attach
 
 
-@pytest.fixture(scope="function", autouse=True)
-def load_end():
+@pytest.fixture(scope="session", autouse=True)
+def configuration_browser():
     load_dotenv()
+
+    browser.config.base_url = 'https://demoqa.com'
+    browser.config.window_width = 1920
+    browser.config.window_height = 1080
 
     selenoid_login = os.getenv("SELENOID_LOGIN")
     selenoid_pass = os.getenv("SELENOID_PASS")
@@ -27,24 +31,33 @@ def load_end():
         }
     }
 
-    options.capabilities, update(selenoid_capabilities)
+    options.capabilities.update(selenoid_capabilities)
     driver = webdriver.Remote(
-        command_executor=f"https://{selenoid_login}:{selenoid_pass}@{selenoid_url}/wd/hub",
+        command_executor=f"https://{selenoid_login}:{selenoid_pass}@selenoid.autotests.cloud/wd/hub",
         options=options)
 
     browser.config.driver = driver
 
-def configuration_browser(load_end):
-    browser.config.base_url = 'https://demoqa.com'
-    browser.config.window_width = 1920
-    browser.config.window_height = 1080
-
     yield
 
     attach.add_screenshot(browser)
-    attach.add_logs(browser)
+    # attach.add_logs(browser)
     attach.add_html(browser)
     attach.add_video(browser)
 
     browser.quit()
+
+# def configuration_browser():
+#     browser.config.base_url = 'https://demoqa.com'
+#     browser.config.window_width = 1920
+#     browser.config.window_height = 1080
+#
+#     yield
+#
+#     attach.add_screenshot(browser)
+#     attach.add_logs(browser)
+#     attach.add_html(browser)
+#     attach.add_video(browser)
+#
+#     browser.quit()
 
